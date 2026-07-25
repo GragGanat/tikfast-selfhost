@@ -1,0 +1,11 @@
+services:
+  tikfast:
+    image: nginx:alpine
+    container_name: tikfast
+    restart: unless-stopped
+
+    ports:
+      - "8085:80"
+
+    volumes:
+      - ./tikv4.html:/usr/share/nginx/html/index.html:ro
