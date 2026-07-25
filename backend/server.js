@@ -1,15 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 
-const infoRoute = require("./routes/info"); // Import the route
+const infoRoute = require("./routes/info");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-// Use the route
-app.use("/api", infoRoute);
 
 app.get("/", (req, res) => {
     res.json({
@@ -17,6 +14,8 @@ app.get("/", (req, res) => {
         status: "running"
     });
 });
+
+app.use("/api", infoRoute);
 
 const PORT = 3000;
 
