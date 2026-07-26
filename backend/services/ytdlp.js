@@ -22,7 +22,12 @@ async function extractVideo(url) {
 
     } catch {
 
-        throw new Error("Failed to retrieve video information.");
+        const AppError = require("../utils/AppError");
+
+        throw new AppError(
+            "Failed to retrieve video information.",
+            500
+        );
 
     }
 

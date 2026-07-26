@@ -2,28 +2,13 @@ const express = require("express");
 
 const router = express.Router();
 
-const config = require("../config");
+const {
+    health
+} = require("../controllers/healthController");
 
-router.get("/health", (req, res) => {
-
-    res.json({
-
-        success: true,
-
-        status: "ok",
-
-        app: "TikFast API",
-
-        version: "0.1.0",
-
-        environment: config.nodeEnv,
-
-        uptime: Math.floor(process.uptime()),
-
-        timestamp: new Date().toISOString()
-
-    });
-
-});
+router.get(
+    "/health",
+    health
+);
 
 module.exports = router;
