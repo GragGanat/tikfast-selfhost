@@ -33,6 +33,33 @@ async function extractVideo(url) {
 
 }
 
+async function streamDownload(url, res) {
+
+    const subprocess = execa("yt-dlp", [
+        "-o",
+        "-",
+        "--quiet",
+        "--no-part",
+        url
+    ]);
+
+    res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="video.mp4"'
+    );
+
+    res.setHeader(
+        "Content-Type",
+        "application/octet-stream"
+    );
+
+    subprocess.stdout.pipe(res);
+
+    await subprocess;
+
+}
+
 module.exports = {
-    extractVideo
+    extractVideo,
+    streamDownload
 };
