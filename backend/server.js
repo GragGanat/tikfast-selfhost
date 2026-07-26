@@ -5,6 +5,8 @@ const cors = require("cors");
 
 const config = require("./config");
 
+const downloadRoute = require("./routes/download");
+
 const infoRoute = require("./routes/info");
 const healthRoute = require("./routes/health");
 const errorHandler = require("./middlewares/errorHandler"); // 1. Import errorHandler
@@ -23,6 +25,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", infoRoute);
 app.use("/api", healthRoute);
+app.use("/api", downloadRoute);
 
 app.use(errorHandler); // 2. Place it AFTER all routes
 
