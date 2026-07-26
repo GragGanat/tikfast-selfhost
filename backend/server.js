@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 
@@ -17,7 +19,7 @@ app.get("/", (req, res) => {
 
 app.use("/api", infoRoute);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`TikFast API listening on port ${PORT}`);
