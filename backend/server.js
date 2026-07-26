@@ -3,7 +3,11 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
+const config = require("./config");
+
 const infoRoute = require("./routes/info");
+const healthRoute = require("./routes/health");
+const errorHandler = require("./middlewares/errorHandler"); // 1. Import errorHandler
 
 const app = express();
 
@@ -18,9 +22,12 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api", infoRoute);
+app.use("/api", healthRoute);
 
-const PORT = process.env.PORT || 3000;
+app.use(errorHandler); // 2. Place it AFTER all routes
 
-app.listen(PORT, () => {
-    console.log(`TikFast API listening on port ${PORT}`);
+
+// 3. Keep only ONE app.listen using config.port
+app.listen(config.port, () => {
+    console.log(`TikFast API listening on port ${config.port}`);
 });
