@@ -1,4 +1,6 @@
 const { execa } = require("execa");
+const { spawn } = require("child_process");
+const AppError = require("../utils/AppError");
 
 async function extractVideo(url) {
 
@@ -12,30 +14,64 @@ async function extractVideo(url) {
         const info = JSON.parse(stdout);
 
         return {
+
             title: info.title,
-            author: info.uploader || info.channel || "Unknown",
-            thumbnail: info.thumbnail,
-            duration: info.duration,
-            platform: info.extractor,
-            originalUrl: info.webpage_url
+        
+            author:
+                info.uploader ||
+                info.channel ||
+                "Unknown",
+        
+            thumbnail:
+                info.thumbnail,
+        
+            duration:
+                info.duration,
+        
+            platform:
+                info.extractor,
+        
+            originalUrl:
+                info.webpage_url,
+        
+            streamUrl:
+                `/api/stream?url=${encodeURIComponent(info.webpage_url)}`,
+        
+            downloadUrl:
+                `/api/download?url=${encodeURIComponent(info.webpage_url)}`,
+        
+            audioUrl:
+                `/api/audio?url=${encodeURIComponent(info.webpage_url)}`
+        
         };
 
-    } catch {
+    } catch (err) {
 
-        const AppError = require("../utils/AppError");
-
+        console.error("===== yt-dlp ERROR =====");
+        console.error(err);
+    
+        if (err.stdout) {
+            console.error("STDOUT:");
+            console.error(err.stdout);
+        }
+    
+        if (err.stderr) {
+            console.error("STDERR:");
+            console.error(err.stderr);
+        }
+    
         throw new AppError(
             "Failed to retrieve video information.",
             500
         );
-
+    
     }
 
 }
 
-async function streamDownload(url, res) {
+function streamVideo(url, res, download = false) {
 
-    const subprocess = execa("yt-dlp", [
+    const yt = spawn("yt-dlp", [
         "-o",
         "-",
         "--quiet",
@@ -43,23 +79,45 @@ async function streamDownload(url, res) {
         url
     ]);
 
-    res.setHeader(
-        "Content-Disposition",
-        'attachment; filename="video.mp4"'
-    );
+    if (download) {
+        res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="video.mp4"'
+        );
+    } else {
+        res.setHeader(
+            "Content-Disposition",
+            "inline"
+        );
+    }
 
     res.setHeader(
         "Content-Type",
-        "application/octet-stream"
+        "video/mp4"
     );
 
-    subprocess.stdout.pipe(res);
+    yt.stdout.pipe(res);
 
-    await subprocess;
+    yt.stderr.on("data", data => {
+        console.error(data.toString());
+    });
 
+    yt.on("close", code => {
+        console.log("yt-dlp exited:", code);
+    });
+
+}
+
+function streamDownload(url, res) {
+    return streamVideo(url, res, true);
+}
+
+function streamPreview(url, res) {
+    return streamVideo(url, res, false);
 }
 
 module.exports = {
     extractVideo,
-    streamDownload
+    streamDownload,
+    streamPreview
 };

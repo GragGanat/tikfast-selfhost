@@ -14,4 +14,9 @@ router.post(
     download
 );
 
+router.get(
+    "/download",
+    download
+);
+
 module.exports = router;

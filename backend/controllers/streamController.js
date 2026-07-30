@@ -1,11 +1,11 @@
-const { streamDownload } = require("../services/ytdlp");
+const { streamPreview } = require("../services/ytdlp");
 const AppError = require("../utils/AppError");
 
-async function download(req, res) {
+async function stream(req, res) {
 
     const url =
-        req.body?.url ||
-        req.query?.url;
+        req.query?.url ||
+        req.body?.url;
 
     if (!url) {
         throw new AppError(
@@ -14,10 +14,10 @@ async function download(req, res) {
         );
     }
 
-    await streamDownload(url, res);
+    await streamPreview(url, res);
 
 }
 
 module.exports = {
-    download
+    stream
 };

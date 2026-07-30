@@ -6,6 +6,7 @@ const cors = require("cors");
 const config = require("./config");
 
 const downloadRoute = require("./routes/download");
+const streamRoute = require("./routes/stream");
 
 const infoRoute = require("./routes/info");
 const healthRoute = require("./routes/health");
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 app.use("/api", infoRoute);
 app.use("/api", healthRoute);
 app.use("/api", downloadRoute);
+app.use("/api", streamRoute);
 
 app.use(errorHandler); // 2. Place it AFTER all routes
 
