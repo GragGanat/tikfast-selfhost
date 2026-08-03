@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "TikFast Selfhost",
+  "short_name": "TikFast",
+  "description": "Self-hosted universal media downloader powered by yt-dlp.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

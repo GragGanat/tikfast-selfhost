@@ -57,9 +57,7 @@ export const API = {
     //--------------------------------------------------
 
     getDownloadUrl(media) {
-
-        return CONFIG.SERVER + media.downloadUrl;
-
+    return media.downloadUrl;
     },
 
 
@@ -69,9 +67,7 @@ export const API = {
     //--------------------------------------------------
 
     getStreamUrl(media) {
-
-        return CONFIG.SERVER + media.streamUrl;
-
+    return media.streamUrl;
     },
 
 
@@ -81,9 +77,7 @@ export const API = {
     //--------------------------------------------------
 
     getAudioUrl(media) {
-
-        return CONFIG.SERVER + media.audioUrl;
-
+    return media.audioUrl;
     },
 
 

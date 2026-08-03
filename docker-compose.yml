@@ -1,11 +1,28 @@
 services:
-  tikfast:
-    image: nginx:alpine
-    container_name: tikfast
+
+  backend:
+    build:
+      context: ./backend
+
+    container_name: tikfast-backend
+
+    expose:
+      - "3000"
+
     restart: unless-stopped
 
-    ports:
-      - "8085:80"
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
 
-    volumes:
-      - ./tikv4.html:/usr/share/nginx/html/index.html:ro
+    container_name: tikfast-nginx
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
+    ports:
+      - "8080:80"
+
+    restart: unless-stopped
