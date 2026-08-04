@@ -1,3 +1,4 @@
+const sanitizeFilename = require("../utils/filename");
 const { execa } = require("execa");
 const { spawn } = require("child_process");
 const AppError = require("../utils/AppError");
@@ -69,9 +70,25 @@ async function extractVideo(url) {
 
 }
 
-function streamVideo(url, res, download = false) {
+async function streamVideo(url, res, download = false) {
+
+    let filename = "video";
+
+    try {
+        const { stdout } = await execa("yt-dlp", [
+            "-J",
+            url
+        ]);
+
+        const info = JSON.parse(stdout);
+        filename = sanitizeFilename(info.title || "video");
+    } catch (err) {
+        console.warn("Unable to retrieve title, using default filename.");
+    }
 
     const yt = spawn("yt-dlp", [
+        "-f",
+        "best",
         "-o",
         "-",
         "--quiet",
@@ -82,7 +99,7 @@ function streamVideo(url, res, download = false) {
     if (download) {
         res.setHeader(
             "Content-Disposition",
-            'attachment; filename="video.mp4"'
+            `attachment; filename*=UTF-8''${encodeURIComponent(filename)}.mp4`
         );
     } else {
         res.setHeader(
@@ -108,11 +125,11 @@ function streamVideo(url, res, download = false) {
 
 }
 
-function streamDownload(url, res) {
+async function streamDownload(url, res) {
     return streamVideo(url, res, true);
 }
 
-function streamPreview(url, res) {
+async function streamPreview(url, res) {
     return streamVideo(url, res, false);
 }
 
