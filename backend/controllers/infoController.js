@@ -1,4 +1,4 @@
-const { extractVideo } = require("../services/ytdlp");
+const { extractVideo } = require("../services/media");
 
 async function getVideoInfo(req, res) {
 

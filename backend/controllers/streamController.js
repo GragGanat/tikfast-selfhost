@@ -1,4 +1,4 @@
-const { streamPreview } = require("../services/ytdlp");
+const { streamPreview } = require("../services/media");
 const AppError = require("../utils/AppError");
 
 async function stream(req, res) {

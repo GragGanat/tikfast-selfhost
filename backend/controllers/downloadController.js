@@ -1,4 +1,4 @@
-const { streamDownload } = require("../services/ytdlp");
+const { streamDownload } = require("../services/media");
 const AppError = require("../utils/AppError");
 
 async function download(req, res) {
