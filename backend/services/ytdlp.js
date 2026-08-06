@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const sanitizeFilename = require("../utils/filename");
 const { execa } = require("execa");
 const { spawn } = require("child_process");
@@ -87,8 +89,6 @@ async function streamVideo(url, res, download = false) {
     }
 
     const yt = spawn("yt-dlp", [
-        "-f",
-        "best",
         "-o",
         "-",
         "--quiet",
@@ -126,7 +126,95 @@ async function streamVideo(url, res, download = false) {
 }
 
 async function streamDownload(url, res) {
-    return streamVideo(url, res, true);
+
+    const downloadId = Date.now().toString();
+
+    const output = path.join(
+        __dirname,
+        "../temp",
+        `${downloadId}.%(ext)s`
+    );
+
+    console.log("Starting high-quality download...");
+
+    try {
+
+        const { stdout, stderr } = await execa("yt-dlp", [
+            "-f",
+            "bestvideo+bestaudio/best",
+            "--merge-output-format",
+            "mp4",
+            "-o",
+            output,
+            url
+        ]);
+
+        if (stdout) {
+            console.log(stdout);
+        }
+
+        if (stderr) {
+            console.log(stderr);
+        }
+
+        console.log("Download and merge completed.");
+
+        const inputFile = path.join(
+            __dirname,
+            "../temp",
+            `${downloadId}.mp4`
+        );
+
+        const outputFile = inputFile.replace(
+            ".mp4",
+            ".aac.mp4"
+        );
+
+        console.log("Converting audio to AAC...");
+
+        await execa("ffmpeg", [
+            "-y",
+            "-i",
+            inputFile,
+            "-c:v",
+            "copy",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            outputFile
+        ]);
+
+        console.log("AAC conversion completed.");
+
+        console.log("Sending:", outputFile);
+
+        res.download(outputFile, err => {
+
+            fs.unlink(inputFile, () => {});
+            fs.unlink(outputFile, () => {});
+
+            if (err) {
+                console.error(err);
+            }
+
+        });
+
+    } catch (err) {
+
+        console.error("High-quality download failed.");
+
+        if (err.stderr) {
+            console.error(err.stderr);
+        }
+
+        throw new AppError(
+            "Failed to download high-quality video.",
+            500
+        );
+
+    }
+
 }
 
 async function streamPreview(url, res) {
